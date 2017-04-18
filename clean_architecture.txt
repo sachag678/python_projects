@@ -1,0 +1,6 @@
+#clean architecture
+if something is changing a lot it should be a plugin
+plugins are plugged into something
+the things that it is being plugged into doesn't change. 
+
+make sure the test suite can pass and that it covers everything - then ship it
