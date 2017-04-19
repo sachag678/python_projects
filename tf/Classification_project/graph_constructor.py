@@ -1,3 +1,4 @@
+"""Sacha Gunaratne May 2017 v1.0"""
 import tensorflow as tf
 import numpy as np
 
@@ -49,19 +50,25 @@ def knn(num_neighbours):
 	distance = tf.negative(tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(xtrain, xtest)), reduction_indices=1)))
 
 	#indices and values of top 5 k
-	values, indices = tf.nn.top_k(distance, k=num_neighbours, sorted = False)
+	_, indices = tf.nn.top_k(distance, k=num_neighbours, sorted = False)
 
 	#initialize model
 	model = tf.global_variables_initializer()
 
-	#get the top K neighbours labels
+	#get the top K neighbours labels and distances
 	nearest_neighbors = [tf.argmax(ytrain[indices[i]], 0) for i in range(num_neighbours)]
+	nearest_neighbors_dist = [tf.argmax(distance[indices[i]], 0) for i in range(num_neighbours)]
 
 	#make it a tensor
 	neighbors_tensor = tf.stack(nearest_neighbors)
+	nn_dist_tensor = tf.stack(nearest_neighbors_dist)
 
 	#gets the unique values and the counts
-	uniq, _, count = tf.unique_with_counts(neighbors_tensor)
+	uniq, idx, count = tf.unique_with_counts(neighbors_tensor)
+
+	#somehow update the count variable with weights in the following manner
+	#count[idx]= count[idx]/(nn_dist_tensor[idx])**2
+
 	#gets the index of the max count
 	train_op = tf.slice(uniq, begin=[tf.argmax(count, 0)], size=tf.constant([1], dtype=tf.int64))[0]
 

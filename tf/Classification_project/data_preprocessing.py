@@ -1,3 +1,4 @@
+"""Sacha Gunaratne May 2017 v1.0"""
 import numpy as np
 
 def normalize(batch):
