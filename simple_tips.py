@@ -9,6 +9,7 @@ def func2():
 	#printing the values from two lists at the same time
 	xl = [1,2,3]
 	yl = [2,4,6]
+
 	#zip creates tuples of two lists (1,2), (2,4), (3,6)
 	for x, y in zip(xl,yl):
 		print(x,y)
@@ -76,4 +77,15 @@ def func8():
 	my_dict = {"j":4,"h":5}
 	for key,value in my_dict.iteritems(): #returns one item at a time instead of all if you use items()
 		print(my_dict[key])
-func7()
+
+def func9():
+	x = []
+	for i in range(10):
+		if i%5==0:
+			x.append(i)
+	print(x)
+
+	f = [i for i in range(10) if i%5==0]
+	print(f)
+
+func9()
