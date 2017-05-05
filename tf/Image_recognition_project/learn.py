@@ -22,7 +22,7 @@ def train_model(num_epochs, batch_size, learning_rate):
 	te_data = normalize(images_test)
 	te_labels = one_hot_encode_labels(labels_test,num_classes)
 
-	x,y_,model,train_op,accuracy,keep_drop = classifier(learning_rate, True)
+	x,y_,model,train_op,accuracy,keep_prob = classifier(learning_rate, True)
 
 	with tf.Session() as sess:
 			sess.run(model)
@@ -36,7 +36,7 @@ def train_model(num_epochs, batch_size, learning_rate):
 			#make the containers to hold test and train accuracy
 			train_accuracy = np.zeros([num_epochs*num_batches,1])
 			test_accuracy = np.zeros([num_epochs,1])
-			print(Hello)
+
 			for epoch in range(num_epochs):
 				
 				#get shuffled index
@@ -59,7 +59,7 @@ def train_model(num_epochs, batch_size, learning_rate):
 						start = sample_length-batch_size
 
 					batch_x,batch_y = shuffled_train_data[start:end][:],shuffled_train_labels[start:end][:]
-					print(batch_x.shape)
+
 					_,train_accuracy[count] = sess.run([train_op, accuracy], feed_dict={x:batch_x,y_:batch_y,keep_prob: 0.5})
 
 					#prints out the accuracy every 7 batches (So that an even amount gets printed out based on num_batches)
@@ -69,7 +69,7 @@ def train_model(num_epochs, batch_size, learning_rate):
 				
 					count +=1
 
-				test_accuracy[epoch] = sess.run(accuracy, feed_dict={x: te_data, y_: te_labels, keep_drop: 1.0})	
+				test_accuracy[epoch] = sess.run(accuracy, feed_dict={x: te_data, y_: te_labels, keep_prob: 1.0})	
 				print("epoch: %d, test accuracy: %g"%(epoch, test_accuracy[epoch]))
 				print("--------------------------------------------------------------")
 
@@ -99,4 +99,4 @@ if __name__ == '__main__':
 	# num_epochs = int(raw_num_epochs)
 
 	# train_model(num_epochs,batch_size,learning_rate)
-	train_model(10,100,0.5)
+	train_model(10,20,0.5)
