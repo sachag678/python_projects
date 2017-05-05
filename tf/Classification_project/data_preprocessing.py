@@ -49,3 +49,5 @@ if __name__ =='__main__':
 	#print(labels[:][:])
 	print(ohc_lables.shape[0])
 
+	print(normalized_batch.dtype)
+
