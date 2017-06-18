@@ -272,7 +272,7 @@ if __name__ == '__main__':
 
     model_params = {}   
     model_mode = "classification"
-    model_type = "knn"
+    model_type = "svm"
 
     model = build_model(train_inputs, train_labels, model_params,model_mode, model_type)
     evaluate_model(model, test_inputs, test_labels,model_mode)
