@@ -21,6 +21,7 @@ def train_model(num_epochs, batch_size, learning_rate):
 	images_test,labels_test = load_data('test_32x32.mat')
 	te_data = normalize(images_test)
 	te_labels = one_hot_encode_labels(labels_test,num_classes)
+	test_batch = generate_data(te_data,te_labels)
 
 	x,y_,model,train_op,accuracy,keep_prob = classifier(learning_rate, True)
 
@@ -65,17 +66,19 @@ def train_model(num_epochs, batch_size, learning_rate):
 					#prints out the accuracy every 7 batches (So that an even amount gets printed out based on num_batches)
 					print_out = int(num_batches/7)
 					if i%print_out==0:
-						print("epoch%d, train_step %d, training accuracy %g"%(epoch, i, train_accuracy[count]))
+						print("epoch: %d, train_step %d, training accuracy %g"%(epoch, i, train_accuracy[count]))
 				
 					count +=1
 
-				test_accuracy[epoch] = sess.run(accuracy, feed_dict={x: te_data, y_: te_labels, keep_prob: 1.0})	
-				print("epoch: %d, test accuracy: %g"%(epoch, test_accuracy[epoch]))
+				for i in range(images_test.shape[0]):
+					batch = next(test_batch)	
+					test_accuracy[epoch] += sess.run(accuracy, feed_dict={x: np.reshape(batch[0], (1,32,32,3)), y_: np.reshape(batch[1], (1,10)), keep_prob: 1.0})	
+				print("epoch: %d, test accuracy: %g"%(epoch, test_accuracy[epoch]/images_test.shape[0]))
 				print("--------------------------------------------------------------")
 
 	#calculates average accuracy at five points#plots train accuracy
 	train_line, = plt.plot(train_accuracy,'r.', label = 'train accuracy')
-	test_line, = plt.plot([e*num_batches for e in range(num_epochs)], test_accuracy,'b-', label = 'test accuracy')
+	test_line, = plt.plot([e*num_batches for e in range(num_epochs)], test_accuracy/images_test.shape[0],'b-', label = 'test accuracy')
 
 	plt.legend(loc = 'lower right')
 	plt.xlabel('Batch Number')
@@ -83,6 +86,10 @@ def train_model(num_epochs, batch_size, learning_rate):
 	plt.title('Prediction Accuracy vs Batch Number')
 	#plt.legend(handles=[])
 	plt.show()
+
+def generate_data(data, labels):
+	for x in range(data.shape[0]):
+		yield (data[x],labels[x])
 
 if __name__ == '__main__':
 
@@ -99,4 +106,4 @@ if __name__ == '__main__':
 	# num_epochs = int(raw_num_epochs)
 
 	# train_model(num_epochs,batch_size,learning_rate)
-	train_model(10,20,0.5)
+	train_model(100,50,0.5)
