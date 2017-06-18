@@ -117,9 +117,9 @@ if __name__ == '__main__':
     """
     model_params = {}   
     model_mode = "classification"
-    model_type = "svm"
+    model_type = "knn"
 
     train_inputs, train_labels, test_inputs, test_labels = dp.generate_data()
-    build_and_save_model(train_inputs, train_labels, model_type,model_mode,params)
+    build_and_save_model(train_inputs, train_labels, model_type,model_mode,model_params)
     model = load_model()
-    evaluate_model(model, test_inputs, test_labels, model_mode)
+    de.evaluate_model(model, test_inputs, test_labels, model_mode)
