@@ -106,4 +106,4 @@ if __name__ == '__main__':
 	# num_epochs = int(raw_num_epochs)
 
 	# train_model(num_epochs,batch_size,learning_rate)
-	train_model(100,50,0.5)
+	train_model(10,50,0.2)
