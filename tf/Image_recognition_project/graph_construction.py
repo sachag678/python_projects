@@ -37,13 +37,14 @@ def classifier(learning_rate, use_droput):
 
 	cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
 
-	#initialize model
-	model = tf.global_variables_initializer()
-
+	#train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
 	train_op = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 
 	correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
 	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+	#initialize model
+	model = tf.global_variables_initializer()
 
 	return x,y_,model,train_op,accuracy,keep_prob
 
@@ -61,4 +62,4 @@ def conv2d(x, W):
 
 def max_pool_2x2(x):
   return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1], padding='SAME')
+                        strides=[1, 2, 2, 1], padding='VALID')
