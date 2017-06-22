@@ -41,9 +41,9 @@ def one_hot_encode_labels(batch, num_classes):
 if __name__ =='__main__':
 	images,labels = load_data('test_32x32.mat')
 	ohc_labels = one_hot_encode_labels(labels,10)
-	print(ohc_labels.shape)
-	#normalized_images = normalize(images)
-	#print(normalized_images)
+	print(type(ohc_labels))
+	normalized_images = normalize(images)
+	print(normalized_images[:13000].shape)
 	#print(normalized_images.shape[0])
 	#print(normalized_images.dtype)
 	# new_normalized = np.float32(normalized_images)
