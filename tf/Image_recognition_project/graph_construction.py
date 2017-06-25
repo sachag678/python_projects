@@ -1,9 +1,29 @@
 import tensorflow as tf
 
-def classifier(use_droput):
-	"""This method creates a 3 layer convolutional-nn and outputs parameters such as
-		model, x, y_, train_op, accuracy
+def classifier():
+	"""This method creates a 3 layer convolutional-nn using max-pool layers, dropout, tanh activation function
+	and AdamOptimizer
+
+	params: None
+
+	return: 
+
+	:x: A placeholder which contains the 32x32x3 images
+
+	:y_: A placeholder which contains the one hot encoded labels 
+
+	:model: The CNN model
+
+	:train_op: The function that will minimize the cross entropy of the predicted output 
+	and the correct output using the AdamOptimizer
+
+	:accuracy: The function that will calculate the accuracy using the perdicted output
+	and correct output
+
+	:keep_prob: The probabality used to determine how much to dropout during training and 
+	testing
 	"""
+	
 	x = tf.placeholder(tf.float32,[None,32,32,3])
 	y_ = tf.placeholder(tf.float32,[None, 10])
 

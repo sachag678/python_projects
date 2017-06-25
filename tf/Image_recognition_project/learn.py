@@ -9,9 +9,20 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 def train_model(num_epochs, batch_size):
-	"""takes a some parameters, trains a con nueral net model,
-	   calculates accuracy during training and prints it out. Prints out
-	   final accuracy on a test set as well"""
+	"""Trains model, outputs train and validation accuracy during training, has a early stopping
+	   if validation error increases, outputs test accuracy on unseen dataset.
+
+	   params:
+
+	   :num_epochs: This is the number of cycles the model should be trained on
+
+	   :batch_size: Batch training is being used to perform optimization. Therefore the size of the batch
+	   must be specified. It cannot be too large else there will be an out of memory error. Generally 
+	   20-50 is a good size for the current setup
+
+	   return: nothing.
+
+	   """
 
 	#load data
 	num_classes = 10
@@ -28,10 +39,15 @@ def train_model(num_epochs, batch_size):
 	val_data , val_labels = te_data[:num_feat_val_set], te_labels[:num_feat_val_set]
 	testing_data_and_labels = generate_data(te_data[num_feat_val_set:], te_labels[num_feat_val_set:])
 
-	x,y_,model,train_op,accuracy,keep_prob = classifier(True)
+	x,y_,model,train_op,accuracy,keep_prob = classifier()
 
+	#save model functionailty
+	saver = tf.train.Saver()
+
+	#variable used to determine if to exit training phase due to overfitting
 	exit = False
 
+	#start interactive matplotlib session
 	plt.ion()
 
 	with tf.Session() as sess:
@@ -82,8 +98,8 @@ def train_model(num_epochs, batch_size):
 						print("epoch: %d, test accuracy: %g"%(epoch, val_accuracy[count]))
 
 						#plotting
-						train_line, = plt.plot(count*i,train_accuracy[count],'bo', label='train_accuracy')
-						val_line, = plt.plot(count*i,val_accuracy[count],'ro',label = 'validation_accuracy')
+						train_line, = plt.plot(count,train_accuracy[count],'bo', label='train_accuracy')
+						val_line, = plt.plot(count,val_accuracy[count],'ro',label = 'validation_accuracy')
 						plt.xlabel('Batch Number')
 						plt.ylabel('Accuracy')
 						plt.title('Validation & train accuracy vs Batch Number')
@@ -102,10 +118,16 @@ def train_model(num_epochs, batch_size):
 					break
 				print("--------------------------------------------------------------")
 
+			#saves model
+			saver_path = saver.save(sess, './trained_model.ckpt')
+			print("Saved model: %s", saver_path)	
+
 			#calculate test accuracy on unseen test set
 			for _ in range(te_data.shape[0]-num_feat_val_set):
 				batch = next(testing_data_and_labels)
 				test_accuracy += sess.run(accuracy, feed_dict={x: np.reshape(batch[0], (1,32,32,3)), y_: np.reshape(batch[1], (1,10)), keep_prob: 1.0})
+
+
 
 	print("Testing Accuracy: %g" %(float(test_accuracy)/float(te_data.shape[0]-num_feat_val_set)))
 
@@ -113,17 +135,26 @@ def train_model(num_epochs, batch_size):
 	# 	plt.pause(0.05)
 
 def generate_data(data, labels):
-	"""uses a generator to solve the OOM problem for the testing"""
+	"""Uses a generator to solve the OOM problem for the testing
+		
+		params:
+
+		:data: The test data
+
+		:labels: The test labels
+
+		return: A generator tuple which contains one instance of data and its label
+	"""
 	for x in range(data.shape[0]):
 		yield (data[x],labels[x])
 
 if __name__ == '__main__':
 
-	# raw_batch_size = input("Please input batch size (suggested 50): " )
-	# raw_num_epochs = input("Please input number of epochs (suggested 10): ")
+	raw_batch_size = input("Please input batch size (suggested 50): " )
+	raw_num_epochs = input("Please input number of epochs (suggested 10): ")
 	
-	# batch_size = int(raw_batch_size)
-	# num_epochs = int(raw_num_epochs)
+	batch_size = int(raw_batch_size)
+	num_epochs = int(raw_num_epochs)
 
-	# train_model(num_epochs,batch_size)
-	train_model(2,50)
+	train_model(num_epochs,batch_size)
+	#train_model(1,50)

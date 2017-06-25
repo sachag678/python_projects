@@ -5,7 +5,14 @@ import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
 def normalize(images):
-	"""This function normalizes the image files and returns normalized images(0 mean and unit variance)"""
+	"""This function normalizes the image files and returns normalized images(0 mean and unit variance)
+	
+		params: 
+
+		:images: the Nx32x32x3 (4-D) that are going to be normalized
+
+		return: The normalized images 
+	"""
 	output = np.zeros((images.shape[3],32,32,3))
 	for num_image in range(images.shape[3]):
 		output[num_image,:,:,:] = (images[:,:,:,num_image] - np.mean(images[:,:,:,num_image]))/np.std(images[:,:,:,num_image])
@@ -14,7 +21,14 @@ def normalize(images):
 
 
 def load_data(filename):
-	"""loads data from a .mat file and returns a list of images"""	
+	"""loads data from a .mat file and returns a list of images
+		
+		params:
+
+		:filename: The filename of the data being loaded
+
+		return: A tuple of data and labels
+	"""	
 	data = sio.loadmat(filename)
 	x = data['X']
 	y = data['y']
@@ -26,14 +40,15 @@ def one_hot_encode_labels(batch, num_classes):
 	   eg:
 	   if y[0:1] = 2 && num_classes = 6:
 	   		then y[0:1] = [0,0,1,0,0,0] 
-	"""
-	# labels = np.zeros((len(batch),num_classes))
-	# for j in range(len(batch)):
-	# 	for i in range(num_classes):
-	# 		if(batch[j]==[i]):
-	# 			labels[j][i-1]=1
 
-	# return labels
+	   params:
+
+	   :batch: Data being onehotencoded
+
+	   :num_classes: The number of classes that are in the batch
+
+	   return: The one hot encoded data
+	"""
 	encoder = OneHotEncoder()
 	return encoder.fit_transform(batch).toarray()
 
