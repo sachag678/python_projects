@@ -120,7 +120,7 @@ def train_model(num_epochs, batch_size):
 
 			#saves model
 			saver_path = saver.save(sess, './trained_model.ckpt')
-			print("Saved model: %s", saver_path)	
+			print("Saved model: ", saver_path)	
 
 			#calculate test accuracy on unseen test set
 			for _ in range(te_data.shape[0]-num_feat_val_set):
