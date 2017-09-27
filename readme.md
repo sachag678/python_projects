@@ -7,3 +7,5 @@ This contains
 3) requests projects - spotfy app, weather app
 
 4) reinforcement learning - tic tac toe using q-value learning
+
+5) Think bayes - examples from the book
