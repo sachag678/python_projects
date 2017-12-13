@@ -9,3 +9,5 @@ This contains
 4) reinforcement learning - tic tac toe using q-value learning
 
 5) Think bayes - examples from the book
+
+6) Reinforcment learning algorithms - policy evaluation and iteration, value iteration, model free monte carlo simulation
