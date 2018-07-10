@@ -40,7 +40,7 @@ def same_colour(neighbour, row, col):
 
 
 def new_row_and_col(neighbour, row, col):
-    """Update the row and col based on the neighbour location."""
+    """Update the row and col based on the same colour neighbour location."""
     if neighbour["dir"] == "R":
         return row, col + 1
 
@@ -54,7 +54,7 @@ def new_row_and_col(neighbour, row, col):
         return row + 1, col
 
 
-def depth_first_search(visited, matrix, row, col, longest,):
+def depth_first_search(visited, matrix, row, col, longest):
     """Perform depth first search."""
     visited.append({'row': row, 'col': col})
     longest = longest + 1
