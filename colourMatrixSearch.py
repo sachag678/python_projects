@@ -66,22 +66,24 @@ def depth_first_search(visited, matrix, row, col, longest):
 
     return longest
 
-current_longest = 0
-max_longest = 0
 
-matrix = np.array([
-    [1, 2, 2],
-    [3, 3, 3],
-    [3, 2, 1]])
+if __name__ == '__main__':
+    current_longest = 0
+    max_longest = 0
 
-visited = []
+    matrix = np.array([
+        [1, 2, 2],
+        [3, 3, 3],
+        [3, 2, 1]])
 
-for row in range(len(matrix)):
-    for col in range(len(matrix)):
-        current_longest = depth_first_search(visited, matrix, row, col, current_longest)
-        if current_longest > max_longest:
-            max_longest = current_longest
+    visited = []
 
-        current_longest = 0
+    for row in range(len(matrix)):
+        for col in range(len(matrix)):
+            current_longest = depth_first_search(visited, matrix, row, col, current_longest)
+            if current_longest > max_longest:
+                max_longest = current_longest
 
-print(max_longest)
+            current_longest = 0
+
+    print(max_longest)
