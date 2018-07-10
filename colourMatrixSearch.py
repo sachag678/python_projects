@@ -6,7 +6,7 @@ def get_neighbours(visited, matrix, row, col):
     """Get the adjacent neighbours horizontally and vertically."""
     neighbours = []
 
-    if col + 1 < len(matrix):
+    if col + 1 < matrix.shape[1]:
         if not_visited(visited, row, col + 1):
             neighbours.append({"val": matrix[row][col + 1], "dir": "R"})
 
@@ -18,7 +18,7 @@ def get_neighbours(visited, matrix, row, col):
         if not_visited(visited, row - 1, col):
             neighbours.append({"val": matrix[row - 1][col], "dir": "U"})
 
-    if row + 1 < len(matrix):
+    if row + 1 < matrix.shape[0]:
         if not_visited(visited, row + 1, col):
             neighbours.append({"val": matrix[row + 1][col], "dir": "D"})
 
@@ -72,14 +72,14 @@ if __name__ == '__main__':
     max_longest = 0
 
     matrix = np.array([
-        [1, 2, 2],
-        [3, 3, 3],
-        [3, 2, 1]])
+        [1, 2, 2, 1],
+        [2, 4, 3, 2],
+        [4, 3, 3, 4]])
 
     visited = []
 
-    for row in range(len(matrix)):
-        for col in range(len(matrix)):
+    for row in range(matrix.shape[0]):
+        for col in range(matrix.shape[1]):
             current_longest = depth_first_search(visited, matrix, row, col, current_longest)
             if current_longest > max_longest:
                 max_longest = current_longest
