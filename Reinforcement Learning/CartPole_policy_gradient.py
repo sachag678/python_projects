@@ -3,6 +3,7 @@
 import keras
 from keras.models import Sequential
 from keras.layers.core import Dense
+from keras import backend as back
 
 import numpy as np
 import gym
@@ -12,7 +13,7 @@ env = env.unwrapped
 env.seed(1)
 
 # Environement states
-state_size = 4
+state_size = env.observation_space.shape[0]
 action_size = env.action_space.n
 
 
@@ -31,21 +32,44 @@ def discount_and_normalize_rewards(episode_rewards):
     return discounted_episode_rewards
 
 
-def create_model(input_size, alpha, output_size):
+def create_model(input_size, output_size, hidden_dims=[10]):
     """Create Model."""
     model = Sequential()
-    model.add(Dense(10, input_shape=(input_size, ), activation='relu', kernel_initializer='glorot_normal'))
+    model.add(Dense(hidden_dims[0], input_shape=(input_size, ), activation='relu', kernel_initializer='glorot_normal'))
     # self.model.add(Dropout(0.2))
+    for h_dim in hidden_dims[1:]:
+        model.add(Dense(h_dim, activation='relu', kernel_initializer='glorot_normal'))
 
     model.add(Dense(2, activation='relu', kernel_initializer='glorot_normal'))
     # self.model.add(Dropout(0.2))
 
     model.add(Dense(output_size, activation='softmax', kernel_initializer='glorot_normal'))
 
-    adam = keras.optimizers.Adam(lr=alpha, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0)
-    model.compile(loss='mean_squared_error', optimizer=adam)
-
     return model
+
+
+def create_train_function(alpha, model, output_dim):
+    """Create the training function."""
+    action_prob = model.output
+
+    action_one_hot_placeholder = back.placeholder(shape=(None, output_dim),
+                                                  name="action_one_hot")
+
+    discounted_reward_placeholder = back.placeholder(shape=(None, ),
+                                                     name='discount_reward')
+
+    log_prob = back.sum(action_one_hot_placeholder * back.log(action_prob), axis=1)
+
+    loss = back.mean(- log_prob * discounted_reward_placeholder)
+
+    adam = keras.optimizers.Adam(lr=alpha)
+
+    updates = adam.get_updates(params=model.trainable_weights,
+                               loss=loss)
+
+    return back.function(inputs=[model.input, action_one_hot_placeholder, discounted_reward_placeholder],
+                         outputs=[],
+                         updates=updates)
 
 # Hyperparams
 max_episodes = 1000
@@ -53,13 +77,14 @@ alpha = 0.01
 gamma = 0.95
 
 # initialize
-allRewards, episode_states, episode_dlogloss, episode_rewards = [], [], [], []
+allRewards, episode_states, episode_actions_one_hot, episode_rewards = [], [], [], []
+
+model = create_model(state_size, action_size)
+train_fn = create_train_function(alpha, model, action_size)
 
 for episode in range(max_episodes):
 
     state = env.reset()
-
-    model = create_model(state_size, alpha, action_size)
 
     # env.render()
 
@@ -75,7 +100,7 @@ for episode in range(max_episodes):
         action_ = np.zeros(action_size)
         action_[action] = 1
 
-        episode_dlogloss.append(- np.log(action_ * action_prob))
+        episode_actions_one_hot.append(action_)
         episode_rewards.append(reward)
 
         if done:
@@ -99,17 +124,13 @@ for episode in range(max_episodes):
 
             discounted_episode_rewards = discount_and_normalize_rewards(episode_rewards)
 
-            nd_episode_dlogloss = np.array(episode_dlogloss)
-            for i in range(len(episode_dlogloss)):
-                nd_episode_dlogloss[i] = episode_dlogloss[i] * np.array(discounted_episode_rewards)[i]
+            episode_states = np.vstack(np.array(episode_states))
+            episode_actions_one_hot = np.vstack(np.array(episode_actions_one_hot))
 
-            x_train = np.vstack(np.array(episode_states))
-            y_train = np.vstack(nd_episode_dlogloss)
-
-            model.fit(x_train, y_train, batch_size=len(x_train), epochs=1, verbose=0)
+            train_fn([episode_states, episode_actions_one_hot, discounted_episode_rewards])
 
             # Reset the transition stores
-            episode_states, episode_dlogloss, episode_rewards = [], [], []
+            episode_states, episode_actions_one_hot, episode_rewards = [], [], []
 
             break
 
