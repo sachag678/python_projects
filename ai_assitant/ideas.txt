@@ -1,0 +1,5 @@
+An ai program that has an action value function based on which function it chooses to return?
+How to reward - maybe then I have to teach it. dunno if thats going to work.
+
+
+
